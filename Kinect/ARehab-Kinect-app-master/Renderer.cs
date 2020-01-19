@@ -25,7 +25,7 @@ namespace Csharp_3d_viewer
         private readonly VisualizerData visualizerData;
         private List<Vertex> pointCloud = null;
 
-        private UdpClient udpClient = new UdpClient(11000);
+        private UdpClient udpClient; // = new UdpClient(11000);
 
         private string hololens_ip = "10.189.82.212";
         private string paul_pc_ip = "10.189.92.159";
@@ -87,7 +87,7 @@ namespace Csharp_3d_viewer
         public bool IsActive { get; private set; }
         private bool TrackingAnybody = false;
         private bool normalize_height = true;
-
+        private bool send_data_to_hololens = false; 
         /// <summary>
         /// Constuctor
         /// </summary>
@@ -112,6 +112,8 @@ namespace Csharp_3d_viewer
 
             MT = new MatrixTransformation();
             ReadHololensIP();
+
+            udpClient = new UdpClient(20201);
         }
 
         private void ReadHololensIP()
@@ -365,9 +367,18 @@ namespace Csharp_3d_viewer
 
                                 break;
                             case KeyCode.U:
+                                if (!send_data_to_hololens)
+                                {
                                     Console.WriteLine("Coonecting to " + IP_CLIENT);
                                     udpClient.Connect(IP_CLIENT, 20201);
-                                break;
+                                    send_data_to_hololens = true; 
+                                }
+                                else
+                                {
+                                    send_data_to_hololens = false;
+                                }
+
+                                    break;
 
 
 
@@ -770,19 +781,26 @@ namespace Csharp_3d_viewer
         {
             Byte[] sendBytes = new Byte[data.Length * 4];
 
-            for(int i = 0; i< data.Length; i++)
+            for (int i = 0; i < data.Length; i++)
             {
                 Byte[] temobytes = BitConverter.GetBytes((float)data[i]);
 
                 sendBytes[i * 4] = temobytes[0];
-                sendBytes[i * 4+1] = temobytes[1];
-                sendBytes[i * 4+2] = temobytes[2];
-                sendBytes[i * 4+3] = temobytes[3];
+                sendBytes[i * 4 + 1] = temobytes[1];
+                sendBytes[i * 4 + 2] = temobytes[2];
+                sendBytes[i * 4 + 3] = temobytes[3];
             }
 
-            if( IP_CLIENT != "")
-             udpClient.Send(sendBytes, sendBytes.Length);
-        }
+            if (send_data_to_hololens)
+                try
+                {
+                    udpClient.Send(sendBytes, sendBytes.Length);
+                }
+                catch(Exception ex)
+                {
+
+                }
+            }
 
         /// <summary>
         /// Utility to create the needed resources
