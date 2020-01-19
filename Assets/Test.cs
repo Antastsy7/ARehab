@@ -20,7 +20,7 @@ public class Test : MonoBehaviour
         Vector3 r = reciever.GetComponent<UDPReceive>().right/1000.0f;
         Debug.Log(l);
         Debug.Log(r);
-        left.transform.position = l + new Vector3(0, 0.6f, 0);
-        right.transform.position = r + new Vector3(0, 0.6f, 0);
+        left.transform.position = l + new Vector3(0, -0.94f, 0);
+        right.transform.position = r + new Vector3(0, -0.94f, 0);
     }
 }

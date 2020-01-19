@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class SceneManager : MonoBehaviour
 {
+    public Camera camera;
     private float wait = 3.0f;
     // Start is called before the first frame update
     void Start()
@@ -16,9 +17,8 @@ public class SceneManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        wait -= Time.deltaTime;
-        Debug.Log(wait);
-        if (wait <= 0) 
+        var pos = camera.transform.position;
+        if (Vector2.Distance(new Vector2(pos.x, pos.z), new Vector2(0, 1.5f))<0.5f)
         {
             UnityEngine.SceneManagement.SceneManager.LoadScene("SampleScene", LoadSceneMode.Single);
         }
